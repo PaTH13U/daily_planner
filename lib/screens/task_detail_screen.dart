@@ -1,81 +1,160 @@
-import 'package:daily_planner/screens/edit_task_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import '../models/task.dart';
-import '../services/task_service.dart';
+import 'edit_task_screen.dart';
 
-class TaskDetailScreen extends StatefulWidget {
+class TaskDetailScreen extends StatelessWidget {
   final Task task;
 
-  const TaskDetailScreen({super.key, required this.task});
-
-  @override
-  _TaskDetailScreenState createState() => _TaskDetailScreenState();
-}
-
-class _TaskDetailScreenState extends State<TaskDetailScreen> {
-  late TextEditingController _contentController;
-  late TextEditingController _locationController;
-  late TextEditingController _organizerController;
-  late TextEditingController _noteController;
-  late String _status;
-  late String _reviewer;
-
-  @override
-  void initState() {
-    super.initState();
-    _contentController = TextEditingController(text: widget.task.content);
-    _locationController = TextEditingController(text: widget.task.location);
-    _organizerController = TextEditingController(text: widget.task.organizer);
-    _noteController = TextEditingController(text: widget.task.note);
-    _status = widget.task.status;
-    _reviewer = widget.task.reviewer;
-  }
+  const TaskDetailScreen({Key? key, required this.task}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết Công việc')),
+      appBar: AppBar(
+        title: const Text('Chi tiết Công việc'),
+        backgroundColor: Colors.teal,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Nội dung: ${widget.task.content}'),
-            const SizedBox(height: 8.0),
-            Text('Địa điểm: ${widget.task.location}'),
-            const SizedBox(height: 8.0),
-            Text('Người tổ chức: ${widget.task.organizer}'),
-            const SizedBox(height: 8.0),
-            Text('Ghi chú: ${widget.task.note}'),
-            const SizedBox(height: 8.0),
-            Text('Trạng thái: ${widget.task.status}'),
-            const SizedBox(height: 8.0),
-            Text('Người kiểm duyệt: ${widget.task.reviewer}'),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditTaskScreen(task: widget.task),
-                  ),
-                );
-              },
-              child: const Text('Chỉnh sửa'),
-            ),
+            _buildInfoCard(context),
+            const SizedBox(height: 16),
+            _buildNoteCard(),
+            const SizedBox(height: 16),
+            _buildStatusCard(),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.edit),
+        backgroundColor: Colors.teal,
+        onPressed: () => _editTask(context),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard(BuildContext context) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoRow(Icons.assignment, 'Nội dung', task.content),
+            const Divider(),
+            _buildInfoRow(Icons.calendar_today, 'Ngày',
+                DateFormat('dd/MM/yyyy').format(task.date)),
+            const Divider(),
+            _buildInfoRow(Icons.access_time, 'Thời gian', task.timeRange),
+            const Divider(),
+            _buildInfoRow(Icons.location_on, 'Địa điểm', task.location),
+            const Divider(),
+            _buildInfoRow(Icons.person, 'Người tổ chức', task.organizer),
           ],
         ),
       ),
     );
   }
 
-  @override
-  void dispose() {
-    _contentController.dispose();
-    _locationController.dispose();
-    _organizerController.dispose();
-    _noteController.dispose();
-    super.dispose();
+  Widget _buildNoteCard() {
+    return Container(
+      width: double.infinity,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Ghi chú',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(task.note.isNotEmpty ? task.note : 'Không có ghi chú'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusCard() {
+    return Container(
+      width: double.infinity,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Trạng thái',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Chip(
+                label: Text(task.status),
+                backgroundColor: Colors.grey,
+                labelStyle: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 8),
+              Text('Người kiểm duyệt: ${task.reviewer}'),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: Colors.teal),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: TextStyle(color: Colors.grey[600])),
+                const SizedBox(height: 4),
+                Text(value, style: const TextStyle(fontSize: 16)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Tạo mới':
+        return Colors.blue;
+      case 'Đang thực hiện':
+        return Colors.orange;
+      case 'Hoàn thành':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  void _editTask(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => EditTaskScreen(task: task)),
+    );
   }
 }
