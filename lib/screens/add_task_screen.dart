@@ -98,36 +98,45 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
   Widget _buildDateTimePicker() {
     return Column(
       children: [
-        ListTile(
-          title: Text('Ngày: ${DateFormat('dd/MM/yyyy').format(_date)}'),
-          trailing: const Icon(Icons.calendar_today),
-          onTap: _selectDate,
-          tileColor: Colors.grey[200],
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[400]!),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ListTile(
+            title: Text('Ngày: ${DateFormat('dd/MM/yyyy').format(_date)}'),
+            trailing: const Icon(Icons.calendar_today),
+            onTap: _selectDate,
+          ),
         ),
         const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-              child: ListTile(
-                title: Text('Bắt đầu: ${_startTime.format(context)}'),
-                trailing: const Icon(Icons.access_time),
-                onTap: () => _selectTime(isStartTime: true),
-                tileColor: Colors.grey[200],
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+              child: Container(
+                decoration: BoxDecoration(
+                 border: Border.all(color: Colors.grey[400]!),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListTile(
+                  title: Text('Bắt đầu: ${_startTime.format(context)}'),
+                  trailing: const Icon(Icons.access_time),
+                  onTap: () => _selectTime(isStartTime: true),
+                ),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: ListTile(
-                title: Text('Kết thúc: ${_endTime.format(context)}'),
-                trailing: const Icon(Icons.access_time),
-                onTap: () => _selectTime(isStartTime: false),
-                tileColor: Colors.grey[200],
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10)),
+              child: Container(
+                decoration: BoxDecoration(
+                  border:   Border.all(color: Colors.grey[400]!),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: ListTile(
+                  title: Text('Kết thúc: ${_endTime.format(context)}'),
+                  trailing: const Icon(Icons.access_time),
+                  onTap: () => _selectTime(isStartTime: false),
+                ),
               ),
             ),
           ],
